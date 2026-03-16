@@ -13,6 +13,7 @@ Five main functionalities
 | 5. | Show imported and exported functions | TODO |
 
 ## Requirements to run
+- Operating System: Windows or Linux
 - Python installed in your system
 - A binary file
 
