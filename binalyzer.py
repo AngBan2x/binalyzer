@@ -40,6 +40,7 @@ elif(len(sys.argv) == 3 and sys.argv[2] == "-a"):
 
             e_lfanew = struct.unpack("4b", first_64_bytes[60:63]) # COFF offset
 
+            # check for offset validity
             if (e_lfanew == (b'PE\0\0')):
                 print("COFF offset: Valid")
             else:
