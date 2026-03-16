@@ -18,7 +18,11 @@ Five main functionalities
 
 ## How to run
 - Download the python file
-- run
+- run `python binalyzer.py <path to binary> <arguments>`
+
+### Available arguments
+- `-a`: Analyze the file
+- `-h`: Help
 
 ## Why?
 This is a personal project, to learn about binary files and their structure depending on the Operating System
