@@ -34,10 +34,21 @@ elif(len(sys.argv) == 3 and sys.argv[2] == "-a"):
                 print("Error: invalid class. Must be 1 or 2. Returned value:", ei_class)
 
             #2. Parse the main header: TODO
+        
+        elif (first_64_bytes[:2] == (b'M', b'Z')): # if the first two bytes are MZ
+            print("It's a PE binary!")
 
+            e_lfanew = struct.unpack("4b", first_64_bytes[60:63]) # COFF offset
+
+            if (e_lfanew == (b'PE\0\0')):
+                print("COFF offset: Valid")
+            else:
+                print("COFF offset: INVALID:", e_lfanew)
+
+        else:
+            print("It is neither a ELF nor a PE binary.")
 
         file.close()
-
 
 else:
     help_message()
