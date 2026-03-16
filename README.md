@@ -4,7 +4,7 @@ A CLI tool that serves as a binary analyzer for both ELF and PE formats
 ## What does it do?
 Five main functionalities
 
-| Functionality | Description | Status |
+| # | Functionality Description | Status |
 | --- | --- | --- |
 | 1. | Identification of the type of binary (ELF/PE) and validity | Done |
 | 2. | Display and parse the main header (ELF header / DOS + COFF headers) | TODO |
