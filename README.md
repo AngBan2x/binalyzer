@@ -27,3 +27,5 @@ Five main functionalities
 
 ## Why?
 This is a personal project, to learn about binary files and their structure depending on the Operating System
+
+![License](https://img.shields.io/badge/license-MIT-green)
