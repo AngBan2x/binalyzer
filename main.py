@@ -1,7 +1,9 @@
 # binary analyzer
-import os # to determine the existence of the file
-import struct # to decode the data of the binary
-import sys # for file management
+
+# import local packages
+import analyzers
+from common import os, sys, struct
+import detectors
 
 def help_message(): # for proper use of running the script
     print("Usage: python bin_analyzer.py <path to binary> <arguments>")
