@@ -84,9 +84,21 @@ def parse_pe_header(header, file=None):
         header_info = struct.unpack("<HBBIIIII", file.read(24))
 
         optional_header = dict()
+        opt_standard = dict() # optional standard fields
         print("Magic number", hex(header_info[0]))
-        optional_header["Magic"] = c.OPTIONAL_MAGIC.get(header_info[0])
+        opt_standard["Magic"] = c.OPTIONAL_MAGIC.get(header_info[0])
+        opt_standard["MajorLinkerVersion"] = header_info[1]
+        opt_standard["MinorLinkerVersion"] = header_info[2]
+        opt_standard["SizeOfCode"] = header_info[3]
+        opt_standard["SizeOfInitializedData"] = header_info[4]
+        opt_standard["SizeOfUnitizializedData"] = header_info[5]
+        opt_standard["AddressOfEntryPoint"] = header_info[6]
+        opt_standard["BaseOfCode (address)"] = header_info[7]
 
+        if opt_standard["Magic"] == "PE32":
+            opt_standard["BaseOfData (address)"] = struct.unpack("<I", file.read(4))[0] # PE32 exclusive
+
+        optional_header["Standard Fields"] = opt_standard
 
         pe_header_info["Optional Header"] = optional_header
 
