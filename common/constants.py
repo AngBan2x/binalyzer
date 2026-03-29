@@ -26,3 +26,5 @@ IMAGE_FILE_CHARACTERISTICS = {"Does not contain base relocations" : 0x0001,
                               "This is a DLL": 0x2000,
                               "Must be run ONLY on a uniprocessor machine": 0x4000,
                               "Bytes in big endian": 0x8000}
+
+OPTIONAL_MAGIC = {0x10b : "PE32", 0x20b : "PE32+"}
