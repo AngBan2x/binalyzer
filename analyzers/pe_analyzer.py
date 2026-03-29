@@ -80,6 +80,16 @@ def parse_pe_header(header, file=None):
 
         pe_header_info["File Header"] = file_header
 
+        #-----------------------Read optional header----------------------
+        header_info = struct.unpack("<HBBIIIII", file.read(24))
+
+        optional_header = dict()
+        print("Magic number", hex(header_info[0]))
+        optional_header["Magic"] = c.OPTIONAL_MAGIC.get(header_info[0])
+
+
+        pe_header_info["Optional Header"] = optional_header
+
         return pe_header_info
 
 def list_sections(file=None):
