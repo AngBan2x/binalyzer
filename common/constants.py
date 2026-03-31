@@ -2,6 +2,31 @@
 
 #ELF related constants
 ELF_MAG0_3 = b'\x7fELF' # the magic number (bytes 0 to 3) of the ELF Header
+EI_CLASS = {1 : "32-bit",
+            2 : "64-bit"} # class (architecture) of the ELF
+EI_DATA = {1: "Little Endian",
+           2: "Big Endian"} # data endianness
+EI_OSABI = {0: "UNIX System V",
+            1: "HP-UX",
+            2: "NetBSD",
+            3: "Linux",
+            4: "Solaris",
+            5: "IRIX",
+            6: "FreeBSD",
+            7: "TRU64 UNIX",
+            8: "ARM architecture",
+            9: "Stand-alone (embedded)"}
+E_TYPE = {0: "Unknown",
+          1: "REL (Relocatable file)",
+          2: "EXEC (Executable file)",
+          3: "DYN (Shared object)",
+          4: "CORE (Core file)"}
+
+E_MACHINE = {0: "Unknown",
+            3: "x86 (Intel 386)",
+            0x3E: "AMD x86-64",
+            0x28: "ARM 32-bit",
+            0xB7: "AArch64 (ARM 64-bit)"}
 
 #PE related constants
 PE_HEADER = b'MZ'
