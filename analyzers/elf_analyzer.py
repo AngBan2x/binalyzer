@@ -59,7 +59,7 @@ def parse_elf_header(header, file=None):
 
     # ----------------ELFN_Ehdr----------------------
     ELFN_Ehdr = unpack_header(header) # unpacked header
-    print(ELFN_Ehdr)
+    # print(ELFN_Ehdr) # for debugging
     e_ident = dict()
     e_ident["Magic number"] = str(hex(ELFN_Ehdr[0])) + chr(ELFN_Ehdr[1]) + chr(ELFN_Ehdr[2]) + chr(ELFN_Ehdr[3])
     e_ident["Class (architecture)"] = c.EI_CLASS.get(ELFN_Ehdr[4])
