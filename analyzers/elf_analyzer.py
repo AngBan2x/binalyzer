@@ -16,10 +16,10 @@ def unpack_header(header=str(None)) -> tuple:
         ValueError: If the header isn't provided
     """
 
-    if header == None:
-        raise ValueError("Error: header empty or not provided")
+    if header == None or len(header) < 64:
+        raise ValueError("Error: header empty, not provided or improper size")
     else:
-        architecture = header[6]
+        architecture = header[4]
         endianness = header[5]
         unpacked_header = tuple()
 
@@ -30,7 +30,7 @@ def unpack_header(header=str(None)) -> tuple:
         elif(architecture == 2 and endianness == 1): # 64-bit, little endian
             unpacked_header = struct.unpack("<16BHHIQQQIHHHHHH", header)
         elif(architecture == 2 and endianness == 2): # 64-bit, big endian
-            unpacked_header = struct.unpack("<16BHHIQQQIHHHHHH", header)
+            unpacked_header = struct.unpack(">16BHHIQQQIHHHHHH", header)
         else:
             raise ValueError("Error: Invalid architecture or data endianness\nArchitecture value:", architecture,
                              "\nData endianness:", endianness)
@@ -59,7 +59,6 @@ def parse_elf_header(header, file=None):
 
     # ----------------ELFN_Ehdr----------------------
     ELFN_Ehdr = unpack_header(header) # unpacked header
-    # print(ELFN_Ehdr) # for debugging
     e_ident = dict()
     e_ident["Magic number"] = str(hex(ELFN_Ehdr[0])) + chr(ELFN_Ehdr[1]) + chr(ELFN_Ehdr[2]) + chr(ELFN_Ehdr[3])
     e_ident["Class (architecture)"] = c.EI_CLASS.get(ELFN_Ehdr[4])
@@ -69,7 +68,7 @@ def parse_elf_header(header, file=None):
     e_ident["ABI version"] = ELFN_Ehdr[8]
 
     header_info["e_ident (Identification)"] = e_ident
-    header_info["e_type (Object file type)"] = c.E_TYPE.get(ELFN_Ehdr[16]) # skip to index 16 because the rest is padding
+    header_info["e_type (Object file type)"] = c.E_TYPE.get(ELFN_Ehdr[16]) # skip to index 16; the rest is padding
 
     e_machine = c.E_MACHINE.get(ELFN_Ehdr[17])
     if (e_machine == None):
@@ -88,7 +87,6 @@ def parse_elf_header(header, file=None):
     header_info["e_shentsize (Section Header Table entry size)"] = ELFN_Ehdr[26]
     header_info["e_shnum (Section Header Table entries)"] = ELFN_Ehdr[27]
     header_info["e_shstrndx (Section Header String Table Index)"] = ELFN_Ehdr[28]
-
 
     return header_info
 
