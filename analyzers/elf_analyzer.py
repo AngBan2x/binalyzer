@@ -90,11 +90,10 @@ def parse_elf_header(header, file=None):
 
     return header_info
 
-
-def list_sections(file=__file__):
+def list_sections(file=__file__): # TODO
     raise NotImplementedError
 
-def extract_strings(file=__file__):
+def extract_strings(file=__file__): # TODO
     raise NotImplementedError
 
 def analyze(header, file=None) -> dict:
