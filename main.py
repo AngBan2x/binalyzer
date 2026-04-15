@@ -2,7 +2,7 @@
 
 # import local packages
 import importlib
-import os, sys, struct
+import os, sys
 from detectors import file_type as ft
 from common import helpers as h
 
@@ -28,11 +28,19 @@ def main():
     try:
         with open(filepath, "rb") as file:
             header, filetype = ft.file_type(file=file)
-
             module_name = f"analyzers.{filetype.lower()}_analyzer"
-            analyzer = importlib.import_module(module_name)
-            info = analyzer.analyze(header, file) # dictionary that shows all information of the binary
-            h.rprint_dict(info, 0) # recursively print the dict in indented hierarchical order 
+            
+            try:
+                analyzer = importlib.import_module(name=module_name)
+                info = analyzer.analyze(header, file) # dictionary that shows all information of the binary
+                h.rprint_dict(info) # recursively print the dict in indented hierarchical order 
+            except Exception as e:
+                import traceback
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                print("Type of error:", exc_type)
+                print("Value of error:", exc_value)
+                print("Traceback of error:", exc_traceback)
+                traceback.print_exc()
 
     except Exception as e:
         print(f"Error. Reason: {e}")
