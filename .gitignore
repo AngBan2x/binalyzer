@@ -14,3 +14,5 @@ env/
 # Archivos de configuración de editores
 .vscode/
 .idea/
+
+output
