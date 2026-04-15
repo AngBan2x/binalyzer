@@ -13,5 +13,12 @@ def rprint_dict(x=dict, level=0):
         if str(type(value)) == "<class \'dict\'>": # if the value is another dictionary
             print(f"{'\t' * level}{key} :")
             rprint_dict(value, level+1)
+            print(" ")
+        elif str(type(value)) == "<class \'list\'>": # if the value is a list
+            print(f"{'\t' * level}{key} :")
+            for i in range(len(value)):
+                print(f"{'\t' * (level + 1)}[{i}]")
+                rprint_dict(value[i], level+1)
+                print(" ")
         else:
             print(f"{'\t' * level}{key} : {value}")
