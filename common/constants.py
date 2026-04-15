@@ -1,6 +1,6 @@
 #common/constants.py: constants used all along the project
 
-#ELF related constants
+#ELF related constants ==================================================================
 ELF_MAG0_3 = b'\x7fELF' # the magic number (bytes 0 to 3) of the ELF Header
 EI_CLASS = {1 : "32-bit",
             2 : "64-bit"} # class (architecture) of the ELF
@@ -28,7 +28,35 @@ E_MACHINE = {0: "Unknown",
             0x28: "ARM 32-bit",
             0xB7: "AArch64 (ARM 64-bit)"}
 
-#PE related constants
+E_SHTYPES = { 0: "Null",
+             1: "Program information",
+             2: "Symbol table",
+             3: "String table",
+             4: "Relocation (w/ addend)",
+             5: "Symbol hash table",
+             6: "Dynamic Linking",
+             7: "Notes",
+             8: "Not present in the file",
+             9: "Relocation (no addend)",
+             10: "Reserved, no semantics",
+             11: "Minimal dynamic linking symbols",
+             14: "Array of constructors",
+             15: "Array of destructors",
+             16: "Array of pre-constructors",
+             17: "Section group",
+             18: "Extended section indices",
+             19: "Relative Relocations",
+             20: "Number of defined types",
+             0x6ffffff6: "GNU-Style hash table",
+             0x6ffffff7: "Prelink library list",
+             0x6ffffff8: "Checksum for DSO content",
+             # NOT USED: Sun-specific types
+             0x6ffffffd: "Version definition section",
+             0x6ffffffe: "Version needs section",
+             0x6fffffff: "Version symbol table",
+}
+
+#PE related constants ===================================================================
 PE_HEADER = b'MZ'
 PE_SIGNATURE = b'PE\0\0'
 IMAGE_FILE_MACHINES = {"x64" : 0x8664,
