@@ -8,7 +8,7 @@ Five main functionalities
 | --- | --- | --- |
 | 1. | Identification of the type of binary (ELF/PE) and validity | Done |
 | 2. | Display and parse the main header (ELF header / DOS + COFF headers) | Done |
-| 3. | List sections (ELF) / segments (PE) with their attributes (name, size, offset, permissions) | TODO |
+| 3. | List sections (ELF) / segments (PE) with their attributes (name, size, offset, permissions) | ELF |
 | 4. | Extract and show strings | TODO |
 | 5. | Show imported and exported functions | TODO |
 
