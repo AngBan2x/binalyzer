@@ -1,6 +1,7 @@
 # analyzers/elf_analyzer.py: module that analyzes ELF binaries
 import struct
 from common import constants as c
+from common import helpers as h
 
 def unpack_header(header=str(None)) -> tuple:
     """
@@ -17,7 +18,7 @@ def unpack_header(header=str(None)) -> tuple:
     """
 
     if header == None or len(header) < 64:
-        raise ValueError("Error: header empty, not provided or improper size")
+        raise ValueError("Error: header empty, not provided or invalid size")
     else:
         architecture = header[4]
         endianness = header[5]
@@ -37,6 +38,65 @@ def unpack_header(header=str(None)) -> tuple:
 
         return unpacked_header
 
+def section_type(value: int) -> str:
+    """
+    Detects the type of the section, given a value
+
+    Args:
+        value(int)
+    Returns:
+        result(str): Can be a string that describes the type or a hex value if not found
+    """
+
+    result = str()
+    type = c.E_SHTYPES.get(value)
+    if type is None:
+        if value >= 0x60000000 and value <= 0x6ffffff5:
+            type = "OS-Specific"
+        elif value >= 0x70000000 and value <= 0x7fffffff:
+            type = "Processor-specific"
+        elif value >= 0x80000000 and value <= 0x8fffffff:
+            type = "User application-specific"
+        else:
+            type = str(hex(value))
+
+    result = type
+    return result
+
+def section_flags(value: int) -> dict:
+    """
+    Detects the bit flags within a given value and returns a dictionary with given information 
+    
+    Args:
+        value(int)
+    
+    Returns:
+        flags(dict): Dictionary containing information of available flags. If none are available, then it will be defined as {0x0: None}
+    """
+
+    flags = dict()
+    
+    if value == 0:
+        flags[0x0] = "None"
+    elif (value >= 0x0ff00000):
+        flags[0x0ff00000] = "OS-specific"
+        if (value >= 0xf0000000):
+            flags[0xf0000000] = "Processor-specific"
+    elif value not in c.E_SHFLAGS.keys():
+        flags[hex(value)] = "Other"
+    else:
+        aux = value
+        i = 0
+        while (aux > 0):
+            digit = ((aux % 2) << i)
+            if digit in c.E_SHFLAGS.keys():
+                flags[hex(digit)] = c.E_SHFLAGS[digit]
+
+            aux = aux // 2
+            i += 1
+
+    return flags
+
 def parse_elf_header(header, file=None):
     """
     Parses the ELF header and extracts all of the relevant information, like architecture.
@@ -53,7 +113,7 @@ def parse_elf_header(header, file=None):
     """
 
     if file is None:
-        raise ValueError("error: file object must be provided")
+        raise ValueError("Error: non-empty file object must be provided")
 
     header_info = dict() # organized and "tagged" ELFN_Ehdr
 
@@ -90,8 +150,63 @@ def parse_elf_header(header, file=None):
 
     return header_info
 
-def list_sections(file=__file__): # TODO
-    raise NotImplementedError
+def list_sections(header=dict(), file=None) -> list:
+    if file is None:
+        raise ValueError("Error: non-empty file object must be provided")
+    elif header is None:
+        raise ValueError("Error: non-empty header must be provided")
+    else:
+        section_list = list() # list with results
+
+        # Get architecture and endianness formats from the header for proper reading/unpacking
+        architecture = header.get("e_ident (Identification)").get("Class (architecture)")
+        af = "I" if "32" in architecture else "Q" # architecture format, either uint or ulonglong
+        endianness = header.get("e_ident (Identification)").get("Data encoding")
+        ef = "<" if "Little" in endianness else ">" # endianness format, either little or big
+
+        sh_off = header.get("e_shoff (Section Header Table offset)")
+        sh_entsize = header.get("e_shentsize (Section Header Table entry size)")
+        sh_num = header.get("e_shnum (Section Header Table entries)")
+
+        file.seek(sh_off)
+
+        for i in range(sh_num):
+            section = dict()
+            raw_shdr = file.read(sh_entsize)
+            unp_shdr = struct.unpack(f"{ef}II{af}{af}{af}{af}II{af}{af}", raw_shdr)
+            section["Name"] = unp_shdr[0]
+            section["Type"] = section_type(unp_shdr[1])
+            section["Flags"] = section_flags(unp_shdr[2])
+            section["Address"] = hex(unp_shdr[3])
+            section["Offset"] = unp_shdr[4]
+            section["Size"] = unp_shdr[5]
+            section["Link"] = unp_shdr[6]
+            section["Info"] = unp_shdr[7]
+            section["Address alignment"] = unp_shdr[8]
+            section["Entry size"] = unp_shdr[9]
+            section_list.append(section)
+
+        # Get section header string table index
+        shstrndx = header["e_shstrndx (Section Header String Table Index)"]
+        str_section = section_list[shstrndx]
+        # Read the string table through its "Size" field
+        file.seek(str_section["Offset"])
+        string_table = file.read(str_section["Size"])
+
+        # get a name given an offset
+        def get_name(offset):
+            if offset == 0:
+                return "None"
+            # read until the first null byte and slice to return
+            end = string_table.find(b'\x00', offset)
+            return string_table[offset:end].decode('utf-8')
+
+        # add the proper names of the sections
+        for sec in section_list:
+            sec["Name"] = get_name(sec["Name"])
+
+        return section_list
+
 
 def extract_strings(file=__file__): # TODO
     raise NotImplementedError
@@ -115,6 +230,6 @@ def analyze(header, file=None) -> dict:
     else:
         info = dict()
         info["Header"] = parse_elf_header(header, file)
-        # info["Sections"] = list_sections(file)
+        info["Sections"] = list_sections(info["Header"], file)
         # info["Strings"] = extract_strings(file)
         return info

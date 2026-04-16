@@ -56,6 +56,20 @@ E_SHTYPES = { 0: "Null",
              0x6fffffff: "Version symbol table",
 }
 
+E_SHFLAGS = { 1 << 0: "Writable",
+            1 << 1: "Occupies memory during execution",
+            1 << 2: "Executable",
+            1 << 4: "Might be merged",
+            1 << 5: "Contains null-terminated strings",
+            1 << 6: "sh_info contains SHT index",
+            1 << 7: "Preserve order while combining",
+            1 << 8: "Non-standard OS-specific handling required",
+            1 << 9: "Section is member of a group",
+            1 << 10: "Section hold thread-local data",
+            1 << 11: "Section with compressed data",
+            1 << 21: "Not to be GCed by linker"
+}
+
 #PE related constants ===================================================================
 PE_HEADER = b'MZ'
 PE_SIGNATURE = b'PE\0\0'
