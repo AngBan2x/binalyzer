@@ -55,7 +55,7 @@ def parse_dos_header(file=None):
     if file is None:
         raise ValueError("error: file object must be provided")
 
-def parse_pe_header(header, file=None):
+def parse_pe_header(header, file=None) -> dict:
     """PE Header Parser"""
     if file is None:
         raise ValueError("error: file object must be provided")
