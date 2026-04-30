@@ -55,8 +55,20 @@ def parse_dos_header(file=None):
     if file is None:
         raise ValueError("error: file object must be provided")
 
-def parse_pe_header(header, file=None) -> dict:
-    """PE Header Parser"""
+def parse_pe_header(header=str, file=None) -> dict:
+    """
+    Parses the PE header of the binary and returns a dictionary with all of its information
+
+    Args:
+        header(str): The first 52 or 64 bytes of the binary, depending on the architecture. Cannot be empty.
+        file(__file__): File object, for additional reading of the file. Must be provided/non-empty.
+    
+    Returns:
+        pe_header_info(dict): A dictionary containing all of the information related to the PE Header.
+
+    Raises:
+        ValueError: If the file object is empty or not provided
+    """
     if file is None:
         raise ValueError("error: file object must be provided")
     else:
