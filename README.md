@@ -26,6 +26,6 @@ Five main functionalities
 - `-h`: Help
 
 ## Why?
-This is a personal project, to learn about binary files and their structure depending on the Operating System
+This is a personal project, to learn about binary files and their structure depending on the machine's Operating System and architecture.
 
 ![License](https://img.shields.io/badge/license-MIT-green)
