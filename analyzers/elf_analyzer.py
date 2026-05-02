@@ -151,6 +151,19 @@ def parse_elf_header(header, file=None):
     return header_info
 
 def list_sections(header=dict(), file=None) -> list:
+    """
+    Parses through each section of the binary and returns a list that contains information of each one
+
+    Args:
+        header(dict): The ELF header, required to be able to read the strings from the Section Header String Table. Must be provided and non-empty
+        file(__file__): File object, required to read each entry from the Section Header Table. Must be provided and non-empty
+    
+    Returns:
+        section_list(list): A list of dictionaries, where each dictionary represents the struct that holds all of the information related to the section
+
+    Raises:
+        ValueError: When either the header or the file object is empty or isn't provided.
+    """
     if file is None:
         raise ValueError("Error: non-empty file object must be provided")
     elif header is None:
