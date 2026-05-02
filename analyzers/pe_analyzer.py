@@ -24,7 +24,7 @@ def pe_machine_type(machine=int) -> str:
 
 def pe_fh_flags(characteristics=int) -> dict:
     """
-    Indicates information about the Characteristics of the PE binary
+    Indicates information about the Characteristics of the PE binary file header
     
     Args:
         characteristics(int): Taken from the Characteristics field of the PE File Header. Contains flags to be extracted in hex 
@@ -74,6 +74,7 @@ def parse_pe_header(header=str, file=None) -> dict:
     else:
         pe_header_info = dict()
         e_lfanew = struct.unpack("<I", header[60:64])[0] # COFF offset
+        pe_header_info["COFF Offset"] = e_lfanew
         file.seek(e_lfanew) # go to the offset
         pe_signature = file.read(4)
         pe_header_info["Signature"] = pe_signature
@@ -88,7 +89,7 @@ def parse_pe_header(header=str, file=None) -> dict:
         file_header["PointerToSymbolTable"] = header_info[3]
         file_header["NumberOfSymbols"] = header_info[4]
         file_header["SizeOfOptionalHeader (bytes)"] = header_info[5]
-        file_header["Characteristics (description : flag hex value)"] = pe_fh_flags(header_info[6])
+        file_header["Characteristics"] = pe_fh_flags(header_info[6])
 
         pe_header_info["File Header"] = file_header
 
@@ -116,11 +117,57 @@ def parse_pe_header(header=str, file=None) -> dict:
 
         return pe_header_info
 
-def list_sections(file=None):
+def list_sections(header=str, pe_header=dict(), file=None):
     """Lists the sections"""
     if file is None:
-        raise ValueError("error: file object must be provided")
+        raise ValueError("error: non-empty file object must be provided")
+    elif header is None:
+        raise ValueError("error: non-empty header must be provided")
+    elif pe_header is None:
+        raise ValueError("Error: non-empty PE Header dictionary must be provided")
 
-def analyze(header, file=None):
-    info = parse_pe_header(header, file)
+    def get_name(name=str) -> str:
+        """Get the decoded name of a string"""
+        # conditional to avoid errors while I figure out how to properly extract the name
+        if b'/' in name:
+            return name
+        else:
+            name = name.replace(b'\x00', b'')
+            return name.decode('utf-8', errors="replace")
+            
+    def get_flags(characteristics=int()) -> dict:
+        raise NotImplementedError
+
+    num_sections = pe_header["File Header"]["NumberOfSections"]
+    print("There are", num_sections, "sections")
+
+    # section table offset: COFF Offset value, 4 for signature, 20 for coff file header + SizeOfOptionalHeader
+    st_off = pe_header["COFF Offset"] + 4 + 20 + pe_header["File Header"]["SizeOfOptionalHeader (bytes)"] # section table offset
+    print("Current file position:", file.tell())
+    file.seek(st_off, 0)
+    print("File position after seeking to st_off:", file.tell())
+    
+    section_list = list()
+    for i in range(num_sections):
+        section = dict()
+        section["Name"] = get_name(struct.unpack("<8s", file.read(8))[0])
+        section["VirtualSize"] = struct.unpack("<I", file.read(4))[0]
+        section["VirtualAddress"] = struct.unpack("<I", file.read(4))[0]
+        section["SizeOfRawData"] = struct.unpack("<I", file.read(4))[0]
+        section["PointerToRawData"] = struct.unpack("<I", file.read(4))[0]
+        section["PointerToRelocations"] = struct.unpack("<I", file.read(4))[0]
+        section["PointerToLinenumbers"] = struct.unpack("<I", file.read(4))[0]
+        section["NumberOfRelocations"] = struct.unpack("<H", file.read(2))[0]
+        section["NumberOfLinenumbers"] = struct.unpack("<H", file.read(2))[0]
+        section["Characteristics"] = hex(struct.unpack("<I", file.read(4))[0])
+        section_list.append(section)
+
+    return section_list
+    
+
+
+def analyze(header, file=None) -> dict:
+    info = dict()
+    info["PE Header"] = parse_pe_header(header, file)
+    info["Sections"] = list_sections(header, info["PE Header"], file)
     return info
